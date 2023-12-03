@@ -11,14 +11,13 @@ class Number:
         self.neighbours = []
 
     def check_neighbours(self):
-        for r in [self.start_index[0]-1,self.start_index[0]+1]:
+        for r in [self.start_index[0]-1,self.start_index[0],self.start_index[0]+1]:
             if r < 0: continue
             if r > max_row-1: continue
             for c in range(self.start_index[1]-1,self.start_index[1]+self.length+1):
                 if c < 0: continue
                 if c > max_col-1: continue
                 self.neighbours.append(engine_layout[r][c])
-        print (self.value, self.neighbours)
 
     def is_partnumber (self):
         if all(x.isdigit() or x == '.' for x in self.neighbours):
@@ -61,7 +60,7 @@ for row in range(max_row):
 
 part_numbers = []
 for num in numbers:
-    if not num.is_partnumber():
+    if num.is_partnumber():
         part_numbers.append(num.value)
 
-        print ("-", num.value)
+print (sum(part_numbers))
