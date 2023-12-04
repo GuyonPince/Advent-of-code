@@ -2,33 +2,44 @@ import re
 import time
 import numpy as np
 
+numbers = []
+potential_gears = []
 
 class Number:
-    def __init__(self, value, start_index,length):
-        self.value = int(value)
+    def __init__(self, value: int, start_index):
+        self.value = value
         self.start_index = start_index
-        self.length = length
+        self.length = 1
         self.neighbours = []
+        self.is_partnumber = False
 
+    # get all neighbours
+    # Determine if number is a partnumber
+    # determine if neighbours contain a gear
     def check_neighbours(self):
         for r in [self.start_index[0]-1,self.start_index[0],self.start_index[0]+1]:
-            if r < 0: continue
-            if r > max_row-1: continue
+            if r < 0 or r > max_row-1: continue
             for c in range(self.start_index[1]-1,self.start_index[1]+self.length+1):
-                if c < 0: continue
-                if c > max_col-1: continue
-                self.neighbours.append(engine_layout[r][c])
+                if c < 0 or c > max_row-1: continue
+                val = engine_layout[r][c]
+                self.neighbours.append(Neighbour(val,[r,c]))
+                if val == '*':
+                    potential_gears.append([r, c])
 
-    def is_partnumber (self):
-        if all(x.isdigit() or x == '.' for x in self.neighbours):
-            return False
+        if all(x.value.isdigit() or x.value == '.' for x in self.neighbours):
+            self.is_partnumber = False
         else:
-            return True
-
+            self.is_partnumber = True
+   
     def add_digit (self,digit):
         self.length += 1
         self.value = self.value*10+int(digit)
 
+class Neighbour:
+    def __init__(self, value, index):
+        self.value = value
+        self.index = index
+    
 
 start_time = time.time()
 
@@ -41,26 +52,46 @@ for line in text.splitlines():
     engine_layout.append(list(line))
 
 engine_layout = np.array(engine_layout)
-numbers = []
 max_row, max_col = engine_layout.shape
-num = Number(0,[0, 0],0)
+num = None
 new_num = True
 
+# exctract all numbers and gears from engine layout
 for row in range(max_row):
     for col in range (max_col):
-        if engine_layout[row][col].isdigit() and new_num:
+        val = engine_layout[row][col]
+        if val.isdigit() and new_num:
             new_num = False
-            num = Number(engine_layout[row][col],[row, col],1)
-        elif engine_layout[row][col].isdigit():
-            num.add_digit(engine_layout[row][col])
+            num = Number(int(val),[row, col])
+        elif val.isdigit():
+            num.add_digit(int(val))
         elif not new_num:
             new_num = True
             num.check_neighbours()    
             numbers.append(num) 
 
-part_numbers = []
-for num in numbers:
-    if num.is_partnumber():
-        part_numbers.append(num.value)
+# part 1, determine part numbers
+part_numbers = [x.value for x in numbers if x.is_partnumber]
 
-print (sum(part_numbers))
+
+### Part 2 ###
+potential_gears, count = np.unique(potential_gears, return_counts=True, axis=0)
+
+gears = []
+for i,gear in enumerate(potential_gears):
+    if count[i] > 1:
+        gears.append(gear.tolist())
+        
+gear_ratios = []
+for gear in gears:
+    teeth = []
+    for num in numbers:
+        if any(x.index == gear for x in num.neighbours):
+            teeth.append(num.value)
+            
+    gear_ratios.append (np.prod(teeth))
+
+
+print ("\nSolution part 1 = ", sum(part_numbers))
+print ("Solution part 2 = ", sum(gear_ratios))
+print ("--- %s millis ---\n" % ((time.time() - start_time) * 1000))
