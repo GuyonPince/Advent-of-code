@@ -16,8 +16,9 @@ class Number:
     # get all neighbours
     # Determine if number is a partnumber
     # determine if neighbours contain a gear
+
     def check_neighbours(self):
-        for r in [self.start_index[0]-1,self.start_index[0],self.start_index[0]+1]:
+        for r in range(self.start_index[0]-1, self.start_index[0]+2):
             if r < 0 or r > max_row-1: continue
             for c in range(self.start_index[1]-1,self.start_index[1]+self.length+1):
                 if c < 0 or c > max_row-1: continue
