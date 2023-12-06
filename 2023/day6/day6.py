@@ -32,5 +32,5 @@ calc_wins(t2,distance2)
 
 
 print("\nSolution part 1 = ",np.prod(margin))
-print("\nSolution part 2 = ",calc_wins(t2,distance2))
+print("Solution part 2 = ",calc_wins(t2,distance2))
 print("--- %s millis ---\n" % ((time.time() - start_time) * 1000))
