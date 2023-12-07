@@ -76,8 +76,8 @@ def reverse_search(locations):
 
 
 def check_opverlap(seed_collections, locations):
-    return
-    # smallest_start = reverse_search(locations)
+    #return
+    smallest_start = reverse_search(locations)
     # print ("-",smallest_start)  
 
 maps = []
@@ -96,6 +96,8 @@ for chunk in chunks:
 
 seed_collections = list(list_chunks(list(map(int,seeds.split()[1:])),2))
 seed_collections = [[x, x+n] for x,n in seed_collections]
+
+
 
 check_opverlap(seed_collections, locations)
 
