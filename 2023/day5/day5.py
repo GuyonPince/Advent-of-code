@@ -6,7 +6,7 @@ import sys
 start_time = time.time()
 
 text = ""
-with open("sample.txt") as file:
+with open("input.txt") as file:
     text = file.read()
 
 def list_chunks(lst, n):
@@ -73,8 +73,6 @@ def reverse_search(locations):
 
         print ("*", min_dest)
         prev_dest = min_dest
-
-
 def check_opverlap(seed_collections, locations):
     #return
     smallest_start = reverse_search(locations)
@@ -93,13 +91,22 @@ for chunk in chunks:
     instructions = sorted(instructions, key = lambda x: x[1])
     locations.append([[[dest, dest+n],[source, source+n]] for dest, source, n in instructions])
     
+def intserctions(ranges):
+    overlap = []
+    for x in ranges:
+         for y in ranges:
+            if not x == y:
+                r = range(max(x[0], y[0]), min(x[-1], y[-1])+1)
+                if len(r): overlap.append(r)
+    return overlap
 
 seed_collections = list(list_chunks(list(map(int,seeds.split()[1:])),2))
 seed_collections = [[x, x+n] for x,n in seed_collections]
+print (seed_collections)
+print (intserctions(seed_collections))
 
 
-
-check_opverlap(seed_collections, locations)
+# check_opverlap(seed_collections, locations)
 
 final_locations = [find_endpos(s) for s in map(int,seeds.split()[1:])]
 
