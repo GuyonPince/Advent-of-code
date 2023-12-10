@@ -39,5 +39,5 @@ def part2():
 
 
 print("\nSolution part 1 = ",part1())
-print("Solution part 2 = ",part2())     # 385450922 = high
+print("Solution part 2 = ",part2())
 print("--- %s millis ---\n" % ((time.time() - start_time) * 1000))
