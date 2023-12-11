@@ -2,7 +2,6 @@ import re
 import time
 import math
 import numpy as np
-import cv2 as cv
 
 start_time = time.time()
 
@@ -37,7 +36,6 @@ def find_start(grid):
                 directions.append(direction)
                 
     return start_pos, directions
-
 
 def link_pipes(grid, pos, direction):
     '''Trace the path of the pipe untill back at the start position'''
@@ -79,8 +77,6 @@ def find_enclosed_positions(grid):
                 previous_val = val
 
     return enclosed_positions
-
-
 
 def part1():
     start_pos, directions = find_start(input)
