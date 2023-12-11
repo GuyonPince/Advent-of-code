@@ -5,10 +5,11 @@ import numpy as np
 
 start_time = time.time()
 
-input = np.array([list(x.replace('\n','')) for x in open('sample.txt')])
+input = np.array([list(x.replace('\n','')) for x in open('input.txt')])
 
-def expand_skymap(skymap):
+def expand_skymap(skymap,expansion_factor):
     rows, collumns = np.shape(skymap)
+    expansion_factor = int(expansion_factor-1)
 
     rows_to_add = []
     cols_to_add = []
@@ -16,14 +17,17 @@ def expand_skymap(skymap):
         if all([x=='.' for x in skymap[r,:]]):
             rows_to_add.append(r)
     for c in range(collumns):
-        print (skymap[:,c])
         if all([x=='.' for x in skymap[:,c]]):
             cols_to_add.append(c)
 
     for i,r in enumerate(rows_to_add):
-        skymap = np.insert(skymap,r+i,'.',axis=0)
+        r = r+i*expansion_factor
+        for n in range(expansion_factor):
+            skymap = np.insert(skymap,r,'.',axis=0)
     for i,c in enumerate(cols_to_add):
-        skymap = np.insert(skymap,c+i,'.',axis=1)
+        c = c+i*expansion_factor
+        for n in range(expansion_factor):
+            skymap = np.insert(skymap,c,'.',axis=1)
 
     return skymap
 
@@ -34,19 +38,20 @@ def find_galaxys(skymap):
         for c in range(collumns):
             if skymap[r,c] == '#':
                 galaxys.append((r,c))
+    print ('found the galaxys!')
     return galaxys
 
 def measure(a,b):
-   
     difference = np.diff([a,b],axis=0)[0]
-    print(a,b, abs(sum(difference)))
-    return abs(sum(difference))
+    # print(a,b, abs(sum(difference)))
+    return sum([abs(x) for x in difference])
 
 
 def part1():
-    skymap = expand_skymap(input)
+    skymap = expand_skymap(input,2)
     galaxys = find_galaxys(skymap)
-    
+    # for l in skymap:
+    #     print (''.join(l))
     total_distance = 0
     while galaxys:      
         galaxy = galaxys.pop()
@@ -55,7 +60,17 @@ def part1():
     return total_distance
 
 def part2():
-    return None
+    skymap = expand_skymap(input,1e6)
+    galaxys = find_galaxys(skymap)
+
+    total_distance = 0
+    while galaxys:      
+        galaxy = galaxys.pop()
+        for g in galaxys:
+            total_distance += measure(galaxy,g)
+    return total_distance
+
+
 
 
 print("\nSolution part 1 = ",part1())
