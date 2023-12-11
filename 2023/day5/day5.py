@@ -6,7 +6,7 @@ import sys
 start_time = time.time()
 
 text = ""
-with open("input.txt") as file:
+with open("sample.txt") as file:
     text = file.read()
 
 def list_chunks(lst, n):
