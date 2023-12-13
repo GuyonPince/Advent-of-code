@@ -5,22 +5,19 @@ import numpy as np
 
 start_time = time.time()
 
-input = np.array([list(x.replace('\n','')) for x in open('sample.txt')])
+input = [list(x.replace('\n','')) for x in open('sample.txt')]
 
 def gen_string (string):
-    print (string)
+    
     if not '?' in string:
         return check_string (string)
     
-    str_a = string
-    str_b = string
+    str_a = list(string)
+    str_b = list(string)
     for i,char in enumerate(string):
         if char == '?':
-            str_a[i] = '#'
-            str_b[i] = '.'
-            return gen_string(str_a), gen_string(str_b)
-        elif char == ' ':
-            break
+            str_a[i], str_b[i] = '#', '.'
+            return gen_string(str_a) + gen_string(str_b)
 
 
 def check_string (string):
@@ -33,9 +30,10 @@ def check_string (string):
         return False
 
 def part1():
-    # print (input[0])
-    gen_string(input[0])
-    return None
+    arrangements = []
+    for x in input:
+        arrangements.append(gen_string(x))
+    return sum(arrangements)
 
 def part2():
     return None
@@ -43,4 +41,4 @@ def part2():
 
 print("\nSolution part 1 = ",part1())
 print("Solution part 2 = ",part2())
-print("--- %s millis ---\n" % ((time.time() - start_time) * 1000))
+print("--- %s millis ---\n" % ((time.time() - start_time) * 1000_000))
