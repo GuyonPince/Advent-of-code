@@ -14,6 +14,11 @@ for field in input:
     fields.append(np.array([list(x) for x in field]))
 
 
+class mirror:
+    def __init__(self,value,smudged) -> None:
+        self.value = value
+        self.smudged = smudged 
+
 def lists_equal(a,b):
     rows, collumns = np.shape(a)
     count = 0
@@ -21,17 +26,16 @@ def lists_equal(a,b):
         for c in range(collumns):
             if not a[r,c] == b[r,c]:
                 count+=1
-    if count == 0:
+    if count == 0: # clean mirror
         return True, False
-    elif count == 1:
+    elif count == 1: # smudged mirror
         return True, True
-    else:
+    else: #no mirror
         return False, False 
 
 def find_mirror(field):
     rows, collumns = np.shape(field)
-    mirrors = 0
-    smudged_mirrors = 0
+    mirrors = []
     for r in range(1,rows):
         left_margin, right_margin  = r, (rows - r-1)
 
@@ -42,13 +46,9 @@ def find_mirror(field):
             left = field[r-right_margin-1:r,:]
             right = field[r:,:]
 
-        equal, smudged = lists_equal(left, np.flip(right,axis=0))
-        if equal:
-            if smudged:
-                smudged_mirrors += r*100
-            else:
-                mirrors += r*100
-
+        mir, smudged = lists_equal(left, np.flip(right,axis=0))
+        if mir:
+            mirrors.append(mirror(r*100,smudged))
 
     for c in range(1,collumns):
         left_margin, right_margin  = c, (collumns - c - 1)     
@@ -60,34 +60,24 @@ def find_mirror(field):
             left = field[:,c-right_margin-1:c]
             right = field[:,c:]
             
-        equal, smudged = lists_equal(left, np.flip(right,axis=1))
-        if equal:
-            if smudged:
-                smudged_mirrors += c
-            else:
-                mirrors += c
+        mir, smudged = lists_equal(left, np.flip(right,axis=1))
+        if mir:
+            mirrors.append(mirror(c,smudged))
                 
+    return mirrors
 
- 
-    # if mirrors == 0:
-    #     for l in field:
-    #         print (''.join(l))
-    #     print ('\n')
-    return mirrors, smudged_mirrors
+
+mirrors = []
+for field in fields:
+     mirrors.extend(find_mirror(field))
 
 def part1():
-    mirrors = []
-    for field in fields:
-        mirrors.append(find_mirror(field)[0])
-
-    return sum(mirrors)
+    total_value = sum([mir.value for mir in mirrors if mir.smudged == False])
+    return total_value
 
 def part2():
-    smudged_mirrors = []
-    for field in fields:
-        smudged_mirrors.append(find_mirror(field)[1])
-
-    return sum(smudged_mirrors)
+    total_value = sum([mir.value for mir in mirrors if mir.smudged])
+    return total_value
 
 print("\nSolution part 1 = ",part1()) # 27505
 print("Solution part 2 = ",part2()) # 22906
