@@ -9,17 +9,30 @@ text = ""
 with open("sample.txt") as file:
     text = file.read()
 
-class seed_map():
-    def __init__(self, destination, source):
-        self.destination_range = destination
-        self.source_range = source
-        self.children = []
+# Yield successive n-sized 
+# chunks from l. 
+def divide_chunks(lst, n):     
+    # looping till length l 
+    for i in range(0, len(lst), n):  
+        yield lst[i:i + n] 
 
-    def add_child(self,seed_map):
-        self.children.append(seed_map)
-            
+def intserctions(src,seed_map):
+    s, e = s
+    dest, seed_src, n = seed_map 
+
+    mapped_ranges = []
+    si, ei = max(s, se), min(e, ed)
+    if si < ei:
+        mapped_ranges.append((s,si))
+        mapped_ranges.append((si,ei))
+        mapped_ranges.append((ei,ed))
+    else:
+        mapped_ranges.append(s,e)
+
+    return mapped_ranges
+
 # part 1 algorithm
-def find_endpos (location):
+def find_endpos (location,maps):
     for map in maps:
         for steps in map:
             dest,source,n = steps
@@ -28,29 +41,39 @@ def find_endpos (location):
                 break
     return location
 
-def intserctions(ranges):
-    overlap = []
-    for x in ranges:
-         for y in ranges:
-            if not x == y:
-                r = range(max(x[0], y[0]), min(x[-1], y[-1])+1)
-                if len(r): overlap.append(r)
-    return overlap
+def part1():
+    maps = []
+    seeds,*chunks = text.split("\n\n")
+    seeds = list(map(int, seeds.split()[1:]))
 
-maps = []
-locations = []
-seeds,*chunks = text.split("\n\n")
-seeds = list(map(int, seeds.split()[1:]))
+    for chunk in chunks:
+        instructions = [[int(x) for x in i[1:]] for i in re.findall(r'((\d+) (\d+) (\d+))',chunk)]
+        maps.append(instructions)
+        instructions = sorted(instructions, key = lambda x: x[1])
 
-for chunk in chunks:
-    instructions = [[int(x) for x in i[1:]] for i in re.findall(r'((\d+) (\d+) (\d+))',chunk)]
-    maps.append(instructions)
-    instructions = sorted(instructions, key = lambda x: x[1])
-    locations.append([[[dest, dest+n],[source, source+n]] for dest, source, n in instructions])
+    final_locations = [find_endpos(s,maps) for s in seeds]
+    return min(final_locations)
 
-final_locations = [find_endpos(s) for s in seeds]
+def part2():
+    seeds,*chunks = text.split("\n\n")
+    seeds = list(map(int, seeds.split()[1:]))
 
-print("\nSolution part 1 = ",min(final_locations))
+    seed_ranges = sorted([(s, s+n) for s, n in list(divide_chunks(seeds,2))])
+    print (seed_ranges)
+
+    source = seeds
+    dest = []
+    for chunk in chunks:
+        seed_map = [[int(x) for x in i[1:]] for i in re.findall(r'((\d+) (\d+) (\d+))',chunk)]
+        for m in seed_map:
+            dest, src, n = m 
+            
+            
+        print (seed_map)
+    return
+
+print("\nSolution part 1 = ",part1())
+print("\nSolution part 2 = ",part2())
 print("--- %s millis ---\n" % ((time.time() - start_time) * 1000))
 
 
